@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declarationDir": "dist",
+    "outDir": "dist",
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "sourceMap": true,
+    "strict": true,
+    "strictFunctionTypes": true
+  },
+  "include": ["src"],
+  "exclude": ["coverage", "dist", "node_modules", "src/**/*.test.ts"]
+}

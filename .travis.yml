@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - lts/*
+  - node
+
+jobs:
+  include:
+    - stage: 'Build library'
+      script:
+        - yarn build
+
+after_success: yarn coverage

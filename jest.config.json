@@ -1,0 +1,9 @@
+{
+  "transform": {
+    "^.+\\.ts$": "ts-jest"
+  },
+  "testEnvironment": "jsdom",
+  "collectCoverage": true,
+  "testRegex": "/src/.*\\.test\\.ts$",
+  "moduleFileExtensions": ["ts", "js"]
+}

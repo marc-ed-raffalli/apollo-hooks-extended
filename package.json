@@ -1,0 +1,65 @@
+{
+  "name": "apollo-hooks-extended",
+  "version": "0.1.0",
+  "description": "Library of additional hooks and wrappers for Apollo Client",
+  "author": "Marc Ed Raffalli",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "apollo",
+    "graphql",
+    "react",
+    "hooks",
+    "client",
+    "helpers"
+  ],
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "run-s clean check-code compile test",
+    "clean": "rm -rf dist",
+    "compile": "tsc -p .",
+    "test": "jest",
+    "test:watch": "yarn test --watchAll",
+    "test:coverage": "yarn test --coverage",
+    "coverage": "yarn test:coverage && coveralls < coverage/lcov.info",
+    "check-code": "run-p lint prettier",
+    "lint": "eslint ./src",
+    "lint:fix": "yarn lint --fix",
+    "prettier": "prettier --check .",
+    "prettier:fix": "prettier --write .",
+    "prepublishOnly": "yarn build",
+    "version": "git add -A .",
+    "postversion": "git push && git push --tags"
+  },
+  "peerDependencies": {
+    "@apollo/client": "^3.0.0",
+    "graphql": "^15.0.0",
+    "react": "^16.8.0"
+  },
+  "devDependencies": {
+    "@apollo/client": "^3.2.0",
+    "@testing-library/dom": "^7.24.2",
+    "@testing-library/react": "^11.0.4",
+    "@testing-library/react-hooks": "^3.4.1",
+    "@types/jest": "^26.0.13",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
+    "coveralls": "^3.1.0",
+    "eslint": "^7.9.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-react-hooks": "^4.1.2",
+    "graphql": "^15.3.0",
+    "jest": "^26.4.2",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.1",
+    "react": "^16.13.1",
+    "react-test-renderer": "^16.13.1",
+    "ts-jest": "^26.3.0",
+    "typescript": "^4.0.2"
+  }
+}
