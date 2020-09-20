@@ -2,8 +2,6 @@
   "name": "apollo-hooks-extended",
   "version": "0.1.0",
   "description": "Library of additional hooks and wrappers for Apollo Client",
-  "author": "Marc Ed Raffalli",
-  "license": "MIT",
   "private": false,
   "keywords": [
     "apollo",
@@ -18,6 +16,14 @@
   "files": [
     "dist/**/*"
   ],
+  "author": "Marc Ed Raffalli",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marc-ed-raffalli/apollo-hooks-extended"
+  },
+  "homepage": "https://github.com/marc-ed-raffalli/apollo-hooks-extended",
+  "bugs": "https://github.com/marc-ed-raffalli/apollo-hooks-extended/issues",
   "scripts": {
     "build": "run-s clean check-code compile test",
     "clean": "rm -rf dist",

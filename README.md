@@ -10,12 +10,6 @@ Let's start with big kudos for the authors and maintainers of Apollo, fantastic 
 This package is a complementary library providing additional features for
 [@apollo/client](https://www.apollographql.com/docs/react/).
 
-## Features
-
-- **Resettable Hook:** swap in replacement for
-  [useMutation](https://www.apollographql.com/docs/react/data/mutations/#usemutation-api)
-  Exposes a `reset` function to reset mutation state.
-
 ## Installation
 
 **Using Yarn**:
@@ -34,4 +28,19 @@ $ npm install apollo-hooks-extended
 
 # or
 $ npm i apollo-hooks-extended
+```
+
+## Features
+
+### Resettable Hook
+
+It is not currently possible to reset the state returned by the
+[useMutation](https://www.apollographql.com/docs/react/data/mutations/#usemutation-api) hook.
+
+`useResettableMutation` is a swap in replacement which wraps `useMutation` and provides a `reset` function.
+
+```typescript
+import {useResettableMutation} from 'apollo-hooks-extended';
+// ...
+const [performMutation, {data, loading, error, reset}] = useResettableMutation(query);
 ```
