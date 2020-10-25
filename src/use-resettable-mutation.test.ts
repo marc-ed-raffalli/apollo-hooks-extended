@@ -25,10 +25,12 @@ const ADD_TODO = gql`
 describe('Resettable Mutation', () => {
   const type = 'mock todo';
   let client: ApolloClient<any>,
+    contextClient: ApolloClient<any>,
     defaultHookReturn: HookReturnType[1],
     mutate: jest.Mock,
     onCompleted: jest.Mock,
-    onError: jest.Mock;
+    onError: jest.Mock,
+    expectedData: any;
 
   beforeEach(() => {
     mutate = jest.fn();
@@ -36,6 +38,9 @@ describe('Resettable Mutation', () => {
     onError = jest.fn();
 
     client = new ApolloClient<any>({cache: new InMemoryCache({})});
+    contextClient = new ApolloClient<any>({cache: new InMemoryCache({})});
+
+    expectedData = {addTodo: {id: 'new-id', type}};
 
     defaultHookReturn = {
       data: undefined,
@@ -81,8 +86,6 @@ describe('Resettable Mutation', () => {
 
       await waitForNextUpdate();
 
-      const expectedData = {addTodo: {id: 'new-id', type}};
-
       // verify state after response
       expect(result.current[1]).toMatchObject({
         ...defaultHookReturn,
@@ -96,9 +99,46 @@ describe('Resettable Mutation', () => {
       expect(onCompleted).toHaveBeenCalledWith(expectedData);
       expect(onError).not.toHaveBeenCalled();
     });
+
+    it('optional "option"', async () => {
+      (useMutation as jest.Mock).mockImplementation(() => [mutate, {client: contextClient}]);
+
+      const {result, waitForNextUpdate} = renderHook(() => useResettableMutation(ADD_TODO));
+
+      expect(result.current).toMatchObject([
+        expect.any(Function),
+        expect.objectContaining<HookReturnType[1]>({...defaultHookReturn, client: contextClient})
+      ]);
+
+      mutate.mockResolvedValue({data: expectedData});
+
+      // call mutation to test the wrapper's callbacks are not called
+      act(() => {
+        result.current[0]({variables: {type}});
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current[1]).toMatchObject({
+        ...defaultHookReturn,
+        client: contextClient,
+        called: true,
+        loading: false,
+        data: expectedData,
+        error: undefined
+      });
+    });
   });
 
   describe('Error path', () => {
+    let expectedError: ApolloError;
+
+    beforeEach(() => {
+      expectedError = new ApolloError({
+        graphQLErrors: [new GraphQLError('Foo'), new GraphQLError('Bar')]
+      });
+    });
+
     it('onError', async () => {
       const {result, waitForNextUpdate} = renderHook(() =>
         useResettableMutation(ADD_TODO, {client, onCompleted, onError})
@@ -122,11 +162,7 @@ describe('Resettable Mutation', () => {
       // verify loading state
       expect(result.current[1]).toMatchObject({...defaultHookReturn, called: true, loading: true});
 
-      const error = new ApolloError({
-        graphQLErrors: [new GraphQLError('Foo'), new GraphQLError('Bar')]
-      });
-
-      reject(error);
+      reject(expectedError);
 
       await waitForNextUpdate();
 
@@ -136,13 +172,37 @@ describe('Resettable Mutation', () => {
         called: true,
         loading: false,
         data: undefined,
-        error: error
+        error: expectedError
       });
 
       // resolved value contains the errors
-      await expect(mutationReturnedPromise).resolves.toEqual(error);
+      await expect(mutationReturnedPromise).resolves.toEqual(expectedError);
       expect(onCompleted).not.toHaveBeenCalled();
-      expect(onError).toHaveBeenCalledWith(expect.objectContaining(error));
+      expect(onError).toHaveBeenCalledWith(expect.objectContaining(expectedError));
+    });
+
+    it('optional "option"', async () => {
+      (useMutation as jest.Mock).mockImplementation(() => [mutate, {client: contextClient}]);
+
+      const {result, waitForNextUpdate} = renderHook(() => useResettableMutation(ADD_TODO));
+
+      mutate.mockRejectedValue(expectedError);
+
+      // call mutation to test the wrapper's callbacks are not called
+      act(() => {
+        result.current[0]({variables: {type}});
+      });
+
+      await waitForNextUpdate();
+
+      expect(result.current[1]).toMatchObject({
+        ...defaultHookReturn,
+        client: contextClient,
+        called: true,
+        loading: false,
+        data: undefined,
+        error: expectedError
+      });
     });
   });
 
@@ -151,7 +211,7 @@ describe('Resettable Mutation', () => {
       useResettableMutation(ADD_TODO, {client, onCompleted, onError})
     );
 
-    mutate.mockResolvedValue({data: {addTodo: {id: 'new-id', type}}});
+    mutate.mockResolvedValue({data: expectedData});
 
     act(() => {
       result.current[0]({variables: {type}});
@@ -160,7 +220,6 @@ describe('Resettable Mutation', () => {
     await waitForNextUpdate();
 
     // sanity check, the state is already defined
-    const expectedData = {addTodo: {id: 'new-id', type}};
     expect(result.current[1]).toMatchObject({
       ...defaultHookReturn,
       called: true,
