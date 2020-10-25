@@ -10,7 +10,7 @@ type IResettableMutationState<TData = any> = Pick<
 
 export function useResettableMutation<TData = any, TVariables = any>(
   query: DocumentNode,
-  options?: MutationHookOptions<TData, TVariables>
+  options: MutationHookOptions<TData, TVariables> = {}
 ): [MutationTuple<TData, TVariables>[0], MutationResult<TData> & {reset: () => void}] {
   const [{loading, data, error, called}, setState] = useState<IResettableMutationState>({
       called: false,
@@ -34,11 +34,11 @@ export function useResettableMutation<TData = any, TVariables = any>(
         const response = await mutate(opts);
 
         setState({data: response.data, loading: false, called: true, error: undefined});
-        options?.onCompleted && options?.onCompleted(response.data as TData);
+        options.onCompleted && options.onCompleted(response.data as TData);
         return response;
       } catch (err) {
         setState({data: undefined, loading: false, called: true, error: err});
-        options?.onError && options?.onError(err);
+        options.onError && options.onError(err);
 
         // returned value contains the errors
         return err;

@@ -39,8 +39,32 @@ It is not currently possible to reset the state returned by the
 
 `useResettableMutation` is a swap in replacement which wraps `useMutation` and provides a `reset` function.
 
+As noted in the `useMutation` API, the apollo `client` should be either provided in the hook options:
+
 ```typescript
 import {useResettableMutation} from 'apollo-hooks-extended';
 // ...
-const [performMutation, {data, loading, error, reset}] = useResettableMutation(query);
+const [performMutation, {data, loading, error, reset}] = useResettableMutation(query, {
+  client: clientInstance
+});
+```
+
+or via the context API:
+
+```tsx
+import {useResettableMutation} from 'apollo-hooks-extended';
+import {ApolloProvider} from '@apollo/client';
+
+function App() {
+  return (
+    <ApolloProvider client={clientInstance}>
+      <MutationComp />
+    </ApolloProvider>
+  );
+}
+
+function MutationComp() {
+  const [login, {data, loading, error, reset}] = useResettableMutation(query);
+  // ...
+}
 ```
