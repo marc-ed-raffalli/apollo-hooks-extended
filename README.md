@@ -68,3 +68,49 @@ function MutationComp() {
   // ...
 }
 ```
+
+### Auto Refresh Query (beta)
+
+_since 0.2.0_
+
+This feature allows loading and triggering a refresh of the query with a simple timestamp.
+Based on the parameters provided, the query will either use the `cache-first` or the `network-only` fetch policy.
+
+```tsx
+import {IRefreshTracker, useAutoRefreshQuery} from 'apollo-hooks-extended';
+
+function GetTodos({refresh}: {refresh: IRefreshTracker}) {
+  const {data, loading, error} = useAutoRefreshQuery(queryStatus, {client: authClient, refresh});
+
+  return (
+    <div>
+      <div>
+        Data: <pre>{JSON.stringify(data)}</pre>
+      </div>
+      <div>Loading: {loading}</div>
+      <div>Error: {error}</div>
+    </div>
+  );
+}
+
+function RefreshExample() {
+  // the timestamp set on hard and soft is compared to the timespamp of the last response.
+  const [refresh, setRefresh] = useState({hard: 0, soft: 0}),
+    triggerHardRefresh = useCallback(
+      () => setRefresh((latestState) => ({...latestState, hard: Date.now()})),
+      [setRefresh]
+    ),
+    triggerSoftRefresh = useCallback(
+      () => setRefresh((latestState) => ({...latestState, soft: Date.now()})),
+      [setRefresh]
+    );
+
+  return (
+    <div>
+      <button onClick={triggerHardRefresh}>Hard refresh</button>
+      <button onClick={triggerSoftRefresh}>Soft refresh</button>
+      <GetTodos refresh={refresh} />
+    </div>
+  );
+}
+```
