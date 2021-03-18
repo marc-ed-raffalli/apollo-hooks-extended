@@ -1,4 +1,10 @@
-import {FetchResult, MutationResult, MutationTuple, useMutation} from '@apollo/client';
+import {
+  FetchResult,
+  MutationResult,
+  MutationFunctionOptions,
+  useMutation,
+  ApolloError
+} from '@apollo/client';
 import {MutationHookOptions} from '@apollo/client/react/types/types';
 import {DocumentNode} from 'graphql';
 import {useState} from 'react';
@@ -8,10 +14,14 @@ type IResettableMutationState<TData = any> = Pick<
   'data' | 'called' | 'loading' | 'error'
 >;
 
+export declare type ResettableMutationFunc<TData, TVariables> = (
+  options?: MutationFunctionOptions<TData, TVariables>
+) => Promise<FetchResult<TData> | ApolloError>;
+
 export function useResettableMutation<TData = any, TVariables = any>(
   query: DocumentNode,
   options: MutationHookOptions<TData, TVariables> = {}
-): [MutationTuple<TData, TVariables>[0], MutationResult<TData> & {reset: () => void}] {
+): [ResettableMutationFunc<TData, TVariables>, MutationResult<TData> & {reset: () => void}] {
   const [{loading, data, error, called}, setState] = useState<IResettableMutationState>({
       called: false,
       loading: false
@@ -26,8 +36,8 @@ export function useResettableMutation<TData = any, TVariables = any>(
       onError: undefined
     }),
     mutateWrapper = async (
-      opts: Parameters<MutationTuple<TData, TVariables>[0]>[0]
-    ): Promise<FetchResult<TData>> => {
+      opts?: MutationFunctionOptions<TData, TVariables>
+    ): Promise<FetchResult<TData> | ApolloError> => {
       try {
         setState({data: undefined, loading: true, called: true, error: undefined});
 
