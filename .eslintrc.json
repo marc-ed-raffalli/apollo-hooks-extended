@@ -29,6 +29,7 @@
     "no-console": "error",
     "linebreak-style": ["error", "unix"],
     "eqeqeq": "error",
+    "complexity": ["error", 10],
     "curly": "error",
     "no-else-return": "error",
     "no-implicit-globals": "error",

@@ -131,9 +131,10 @@ describe('Resettable Mutation', () => {
   });
 
   describe('Error path', () => {
-    let expectedError: ApolloError;
+    let expectedError: ApolloError, catchSpy: jest.Mock;
 
     beforeEach(() => {
+      catchSpy = jest.fn();
       expectedError = new ApolloError({
         graphQLErrors: [new GraphQLError('Foo'), new GraphQLError('Bar')]
       });
@@ -157,6 +158,8 @@ describe('Resettable Mutation', () => {
 
       act(() => {
         mutationReturnedPromise = result.current[0]({variables: {type}});
+        // add a catch to prevent UnhandledPromiseRejectionWarning: Unhandled promise rejection.
+        mutationReturnedPromise.catch(catchSpy);
       });
 
       // verify loading state
@@ -175,9 +178,9 @@ describe('Resettable Mutation', () => {
         error: expectedError
       });
 
-      // resolved value contains the errors
-      await expect(mutationReturnedPromise).resolves.toEqual(expectedError);
+      await expect(mutationReturnedPromise).rejects.toEqual(expectedError);
       expect(onCompleted).not.toHaveBeenCalled();
+      expect(catchSpy).toHaveBeenCalledWith(expect.objectContaining(expectedError));
       expect(onError).toHaveBeenCalledWith(expect.objectContaining(expectedError));
     });
 
@@ -190,7 +193,7 @@ describe('Resettable Mutation', () => {
 
       // call mutation to test the wrapper's callbacks are not called
       act(() => {
-        result.current[0]({variables: {type}});
+        result.current[0]({variables: {type}}).catch(catchSpy);
       });
 
       await waitForNextUpdate();
@@ -203,6 +206,7 @@ describe('Resettable Mutation', () => {
         data: undefined,
         error: expectedError
       });
+      expect(catchSpy).toHaveBeenCalledWith(expect.objectContaining(expectedError));
     });
   });
 

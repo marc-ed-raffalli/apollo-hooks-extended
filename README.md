@@ -75,7 +75,10 @@ The errors can be handled as follows:
 
 - `error` property returned by the hook
 - `onError` callback in the hook options
-- Add a `catch()` to the `Promise` returned by the call to the mutation function
+- Add a `catch()` to the `Promise` returned by the call to the mutation function,  
+  or use `async` / `await` and call the mutation within a `try catch`
+
+It is **recommended** to add the error handler to the `Promise` returned when calling the mutation.
 
 ### Auto Refresh Query (beta)
 
