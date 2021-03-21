@@ -1,6 +1,6 @@
 {
   "name": "apollo-hooks-extended",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Library of additional hooks and wrappers for Apollo Client",
   "private": false,
   "keywords": [
