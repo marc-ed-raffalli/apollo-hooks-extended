@@ -69,6 +69,14 @@ function MutationComp() {
 }
 ```
 
+#### Error handling
+
+The errors can be handled as follows:
+
+- `error` property returned by the hook
+- `onError` callback in the hook options
+- Add a `catch()` to the `Promise` returned by the call to the mutation function
+
 ### Auto Refresh Query (beta)
 
 _since 0.2.0_
